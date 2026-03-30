@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nicominecith SMP | Craft Attack Projekt</title>
+    <title>Nicominecith SMP | Teilnehmerliste</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,6 +16,7 @@
             --gray-dark: #0a0a0a;
             --gray-mid: #151515;
             --white: #ffffff;
+            --maybe-blue: #7000ff;
         }
 
         body {
@@ -55,146 +56,154 @@
 
         /* Logo & Header */
         .hero {
-            padding: 120px 20px 60px;
+            padding: 60px 20px 20px;
             text-align: center;
             position: relative;
-        }
-
-        .logo-container {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 30px;
-        }
-
-        .logo-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            height: 150px;
-            background: var(--red);
-            filter: blur(60px);
-            opacity: 0.4;
-            border-radius: 50%;
-            z-index: 0;
-            animation: pulse-glow 4s infinite ease-in-out;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.5; }
         }
 
         .main-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-size: clamp(2rem, 6vw, 3.5rem);
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: -2px;
-            line-height: 0.85;
-            position: relative;
-            z-index: 1;
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
         .subtitle {
-            font-size: clamp(1rem, 3vw, 1.8rem);
+            font-size: 1rem;
             color: var(--red);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 5px;
-            margin-top: 10px;
-            text-shadow: 0 0 15px var(--red-glow);
+            margin-top: 5px;
+            text-shadow: 0 0 10px var(--red-glow);
         }
 
-        /* Buttons */
-        .btn {
-            padding: 18px 40px;
+        /* Filter Buttons */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--gray-dark);
+            border: 1px solid var(--gray-mid);
+            color: #777;
+            padding: 8px 20px;
+            font-size: 0.7rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .btn-discord {
-            background: var(--white);
-            color: var(--black);
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-        }
-
-        .btn-discord:hover {
-            background: var(--red);
+        .filter-btn.active {
+            border-color: var(--red);
             color: var(--white);
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--red-glow);
+            background: rgba(255, 0, 0, 0.1);
         }
 
-        .btn-outline {
-            border-color: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        .filter-btn:hover:not(.active) {
+            border-color: #444;
+            color: #bbb;
         }
 
-        .btn-outline:hover {
-            border-color: var(--white);
+        /* Tabelle Styling */
+        .table-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: #555;
+            padding: 15px;
+            text-align: left;
+            font-weight: 900;
+        }
+
+        tr.player-row {
+            background: var(--gray-dark);
+            transition: all 0.3s ease;
+        }
+
+        tr.player-row:hover {
+            background: var(--gray-mid);
+            transform: scale(1.005);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px 0 0 4px;
+        }
+
+        td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .skin-head-small {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            border-radius: 2px;
+        }
+
+        /* Status Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 2px;
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Card Design */
-        .card-grid {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .badge-red {
+            color: var(--red);
+            border: 1px solid rgba(255, 0, 0, 0.3);
         }
 
-        .player-card {
-            background: var(--gray-dark);
-            border: 1px solid var(--gray-mid);
-            padding: 40px 20px;
-            position: relative;
-            transition: all 0.4s ease;
-            text-align: center;
+        .badge-member {
+            color: #00ccff;
+            border: 1px solid rgba(0, 204, 255, 0.3);
         }
 
-        .player-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 0%; height: 3px;
-            background: var(--red);
-            transition: width 0.4s ease;
-        }
-
-        .player-card:hover {
-            background: #0f0f0f;
-            transform: translateY(-10px);
-            border-color: #333;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .player-card:hover::after {
-            width: 100%;
-        }
-
-        .skin-head {
-            width: 100px;
-            height: 100px;
-            image-rendering: pixelated;
-            margin: 0 auto 20px;
-            transition: transform 0.4s ease;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
-        }
-
-        .player-card:hover .skin-head {
-            transform: scale(1.25) rotate(-3deg);
+        .badge-maybe {
+            color: var(--maybe-blue);
+            border: 1px solid rgba(112, 0, 255, 0.4);
+            text-shadow: 0 0 5px rgba(112, 0, 255, 0.2);
         }
 
         /* Search Bar */
         .search-container {
-            max-width: 600px;
-            margin: 40px auto;
+            max-width: 1000px;
+            margin: 10px auto 20px;
+            padding: 0 20px;
             position: relative;
         }
 
@@ -203,8 +212,8 @@
             background: #0a0a0a;
             border: 1px solid #1a1a1a;
             color: white;
-            padding: 20px 30px;
-            font-size: 1.1rem;
+            padding: 15px 25px;
+            font-size: 1rem;
             font-weight: 700;
             outline: none;
             transition: all 0.3s;
@@ -212,18 +221,25 @@
 
         .search-bar:focus {
             border-color: var(--red);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .twitch-link {
+            color: #6441a5;
+            transition: color 0.2s;
+        }
+
+        .twitch-link:hover {
+            color: #9146ff;
         }
 
         footer {
-            padding: 80px 20px;
+            padding: 40px 20px;
             text-align: center;
-            border-top: 1px solid var(--gray-mid);
-            color: #444;
+            color: #333;
+            font-size: 0.7rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 0.75rem;
+            letter-spacing: 2px;
         }
 
     </style>
@@ -233,105 +249,149 @@
     <div class="bg-wrapper" id="particleContainer"></div>
 
     <header class="hero">
-        <div class="logo-container">
-            <div class="logo-glow"></div>
-            <h1 class="main-title">Nicominecith <span class="text-zinc-500">SMP</span></h1>
-            <div class="subtitle">Craft Attack Projekt</div>
-        </div>
-
-        <div class="max-w-2xl mx-auto mt-6 px-4">
-            <div class="flex items-center justify-center space-x-4 mb-8">
-                <span class="h-[1px] w-12 bg-zinc-800"></span>
-                <span class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.4em]">Launch: Mittwoch, 01. April • 18-20 Uhr</span>
-                <span class="h-[1px] w-12 bg-zinc-800"></span>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="https://discord.gg/mBKjReQXHR" target="_blank" class="btn btn-discord">
-                    <i class="fab fa-discord mr-3"></i> Discord beitreten
-                </a>
-                <a href="#players" class="btn btn-outline">
-                    Teilnehmer ansehen
-                </a>
-            </div>
+        <h1 class="main-title">Nicominecith <span class="text-zinc-600">SMP</span></h1>
+        <div class="subtitle">Teilnehmer-Liste</div>
+        
+        <div class="flex justify-center gap-4 mt-8">
+            <a href="https://discord.gg/mBKjReQXHR" target="_blank" class="px-6 py-2 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-red-600 hover:text-white transition-colors">
+                Discord
+            </a>
         </div>
     </header>
 
-    <section id="players" class="card-grid">
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN...">
-            <i class="fas fa-search absolute right-6 top-1/2 -translate-y-1/2 text-zinc-700"></i>
+    <div class="search-container">
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="setCategory('all')">Alle</button>
+            <button class="filter-btn" onclick="setCategory('streamer')">Streamer</button>
+            <button class="filter-btn" onclick="setCategory('member')">Member</button>
         </div>
+        <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN...">
+    </div>
 
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
-            <!-- Dynamisch -->
-        </div>
-    </section>
+    <main class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Avatar</th>
+                    <th>Name</th>
+                    <th>Rolle / Status</th>
+                    <th style="width: 100px; text-align: right;">Socials</th>
+                </tr>
+            </thead>
+            <tbody id="playerTableBody">
+                <!-- Dynamisch -->
+            </tbody>
+        </table>
+    </main>
 
     <footer>
-        Nicominecith SMP &copy; 2026 • Das Craft Attack Erlebnis
+        Nicominecith SMP &copy; 2026
     </footer>
 
     <script>
         // Partikel Erzeugung
         const container = document.getElementById('particleContainer');
-        for(let i=0; i<40; i++) {
+        for(let i=0; i<30; i++) {
             const p = document.createElement('div');
             p.className = 'particle';
-            const size = Math.random() * 4 + 1;
+            const size = Math.random() * 3 + 1;
             p.style.width = p.style.height = size + 'px';
             p.style.left = Math.random() * 100 + 'vw';
-            p.style.animationDelay = Math.random() * 15 + 's';
+            p.style.animationDelay = Math.random() * 10 + 's';
             p.style.animationDuration = (Math.random() * 10 + 10) + 's';
             container.appendChild(p);
         }
 
+        // Teilnehmer-Datenbank
         const participants = [
-            { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv" },
-            { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt" },
-            { name: "jeypiegc", type: "Creator", twitch: "jeypiegc" },
-            { name: "BenX_LP", type: "Member" },
-            { name: "XJonTendoX", type: "Creator", twitch: "XJonTendoX" },
-            { name: "sebikaacat", type: "Creator", twitch: "sebikaacat" },
-            { name: "der_fynn10", type: "Creator", twitch: "der_fynn10" },
-            { name: "hektor_422", type: "Creator", twitch: "hektor_422" },
-            { name: "RZ Lian", type: "Member" },
-            { name: "Optimalst0rm", type: "Member" },
-            { name: "Elias", type: "Member" },
-            { name: "davidgamingtv", type: "Creator", twitch: "davidgamingtv" },
-            { name: "monkey_3420", type: "Member" },
-            { name: "palyoug", type: "Creator", twitch: "palyoug" },
-            { name: "niebuco", type: "Creator", twitch: "niebuco" },
-            { name: "Beacon", type: "Member" },
-            { name: "fnkamikaze", type: "Creator", twitch: "fnkamikaze" },
-            { name: "n1ghtdreams_", type: "Creator", twitch: "n1ghtdreams_" },
-            { name: "whithhd", type: "Creator", twitch: "whithhd" },
-            { name: "blaqqhd", type: "Creator", twitch: "blaqqhd" }
+            { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv", category: "streamer" },
+            { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt", category: "streamer" },
+            { name: "jeypiegc", type: "Creator", twitch: "jeypiegc", category: "streamer" },
+            { name: "BenX_LP", type: "Member", category: "member" },
+            { name: "Benneno235", type: "zu 99% am Release nicht da", category: "member" },
+            { name: "XJonTendoX", type: "Creator", twitch: "XJonTendoX", category: "streamer" },
+            { name: "sebikaacat", type: "Creator", twitch: "sebikaacat", category: "streamer" },
+            { name: "der_fynn10", type: "Creator", twitch: "der_fynn10", category: "streamer" },
+            { name: "hektor_422", type: "Creator", twitch: "hektor_422", category: "streamer" },
+            { name: "RZ Lian", type: "Member", category: "member" },
+            { name: "Optimalst0rm", type: "vielleicht dabei", category: "member" },
+            { name: "Elias", type: "Member", category: "member" },
+            { name: "davidgamingtv", type: "vielleicht dabei", twitch: "davidgamingtv", category: "streamer" },
+            { name: "monkey_3420", type: "Member", category: "member" },
+            { name: "palyoug", type: "Creator", twitch: "palyoug", category: "streamer" },
+            { name: "niebuco", type: "Creator", twitch: "niebuco", category: "streamer" },
+            { name: "Beacon", type: "Member", category: "member" },
+            { name: "fnkamikaze", type: "Creator", twitch: "fnkamikaze", category: "streamer" },
+            { name: "n1ghtdreams_", type: "Creator", twitch: "n1ghtdreams_", category: "streamer" },
+            { name: "whithhd", type: "Creator", twitch: "whithhd", category: "streamer" },
+            { name: "blaqqhd", type: "Creator", twitch: "blaqqhd", category: "streamer" },
+            { name: "Alessio332", mc: "Ale2k", type: "Member", category: "member" },
+            { name: "BrotSpokyy", mc: "BrotSpokyy", type: "Creator", twitch: "BrotSpokyy", category: "streamer" }
         ];
 
-        const grid = document.getElementById('grid');
+        let currentCategory = 'all';
+        const tableBody = document.getElementById('playerTableBody');
         const searchInput = document.getElementById('searchInput');
 
+        function setCategory(cat) {
+            currentCategory = cat;
+            
+            // UI Update Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === cat || (cat === 'all' && btn.innerText === 'Alle')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            render(searchInput.value);
+        }
+
         function render(filter = '') {
-            grid.innerHTML = '';
-            const filtered = participants.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+            tableBody.innerHTML = '';
+            
+            const filtered = participants.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(filter.toLowerCase());
+                const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
+                return matchesSearch && matchesCategory;
+            });
 
             filtered.forEach(p => {
-                const avatarUrl = `https://cravatar.eu/head/${p.name.split(' ')[0]}/256.png?overlay`;
-                const card = document.createElement('div');
-                card.className = 'player-card cursor-pointer';
+                const skinIdentifier = p.mc || p.name.split(' ')[0];
+                const avatarUrl = `https://cravatar.eu/head/${skinIdentifier}/64.png?overlay`;
                 
-                if (p.twitch) {
-                    card.onclick = () => window.open(`https://twitch.tv/${p.twitch}`, '_blank');
+                const row = document.createElement('tr');
+                row.className = 'player-row';
+                
+                // Bestimme Badge Klasse
+                let badgeClass = 'badge-member';
+                if (p.type === 'vielleicht dabei') {
+                    badgeClass = 'badge-maybe';
+                } else if(p.type === 'Projektleiter' || p.type.includes('99%')) {
+                    badgeClass = 'badge-red';
+                } else if(p.category === 'streamer') {
+                    badgeClass = 'badge-red';
                 }
 
-                card.innerHTML = `
-                    ${p.twitch ? '<i class="fab fa-twitch absolute top-4 right-4 text-zinc-800"></i>' : ''}
-                    <img src="${avatarUrl}" alt="${p.name}" class="skin-head" onerror="this.src='https://cravatar.eu/head/char/256.png'">
-                    <div class="font-black text-lg tracking-tighter uppercase mb-1">${p.name}</div>
-                    <div class="text-[10px] font-bold text-red-600 uppercase tracking-widest">${p.type}</div>
+                row.innerHTML = `
+                    <td>
+                        <img src="${avatarUrl}" class="skin-head-small" alt="Skin" onerror="this.src='https://cravatar.eu/head/char/64.png'">
+                    </td>
+                    <td>
+                        <span class="font-bold uppercase text-sm tracking-tight">${p.name}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${badgeClass}">${p.type}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        ${p.twitch ? `
+                            <a href="https://twitch.tv/${p.twitch}" target="_blank" class="twitch-link" title="Twitch Profil">
+                                <i class="fab fa-twitch"></i>
+                            </a>
+                        ` : '<span class="text-zinc-800">-</span>'}
+                    </td>
                 `;
-                grid.appendChild(card);
+                tableBody.appendChild(row);
             });
         }
 
