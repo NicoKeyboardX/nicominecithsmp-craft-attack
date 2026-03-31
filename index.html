@@ -169,6 +169,13 @@
             height: 32px;
             image-rendering: pixelated;
             border-radius: 2px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background-color: #222;
+        }
+
+        .skin-head-small:hover {
+            transform: scale(1.2);
         }
 
         /* Status Badge */
@@ -232,6 +239,53 @@
             color: #9146ff;
         }
 
+        /* Modal / Full Skin Viewer */
+        #skinModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--gray-dark);
+            border: 1px solid var(--red);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            max-width: 90%;
+            border-radius: 4px;
+            box-shadow: 0 0 50px rgba(255,0,0,0.2);
+        }
+
+        .full-skin-img {
+            height: 350px;
+            image-rendering: pixelated;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
         footer {
             padding: 40px 20px;
             text-align: center;
@@ -284,6 +338,18 @@
         </table>
     </main>
 
+    <!-- Modal für Skin Vorschau -->
+    <div id="skinModal" onclick="closeSkinModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeSkinModal()">&times;</span>
+            <h2 id="modalPlayerName" class="font-black uppercase tracking-widest text-red-600 mb-6">Spieler</h2>
+            <div class="flex justify-center">
+                <img id="fullSkinImg" src="" class="full-skin-img" alt="Voller Skin" onerror="this.src='https://mc-heads.net/body/Steve/350'">
+            </div>
+            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-tighter">Minecraft Skin Vorschau</p>
+        </div>
+    </div>
+
     <footer>
         Nicominecith SMP &copy; 2026
     </footer>
@@ -327,30 +393,41 @@
             { name: "blaqqhd", type: "Creator", twitch: "blaqqhd", category: "streamer" },
             { name: "Alessio332", mc: "Ale2k", type: "Member", category: "member" },
             { name: "BrotSpokyy", mc: "BrotSpokyy", type: "Creator", twitch: "BrotSpokyy", category: "streamer" },
-            { name: "gemer703", type: "vielleicht dabei", category: "member" }
+            { name: "gemer703", mc: "Gemer703", type: "vielleicht dabei", category: "member" }
         ];
 
         let currentCategory = 'all';
         const tableBody = document.getElementById('playerTableBody');
         const searchInput = document.getElementById('searchInput');
 
+        function openSkinModal(name, mcName) {
+            const modal = document.getElementById('skinModal');
+            const fullImg = document.getElementById('fullSkinImg');
+            const modalName = document.getElementById('modalPlayerName');
+            
+            const skinId = mcName || name;
+            modalName.innerText = name;
+            fullImg.src = `https://mc-heads.net/body/${skinId}/350`;
+            modal.style.display = 'flex';
+        }
+
+        function closeSkinModal() {
+            document.getElementById('skinModal').style.display = 'none';
+        }
+
         function setCategory(cat) {
             currentCategory = cat;
-            
-            // UI Update Buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if(btn.innerText.toLowerCase() === cat || (cat === 'all' && btn.innerText === 'Alle')) {
                     btn.classList.add('active');
                 }
             });
-
             render(searchInput.value);
         }
 
         function render(filter = '') {
             tableBody.innerHTML = '';
-            
             const filtered = participants.filter(p => {
                 const matchesSearch = p.name.toLowerCase().includes(filter.toLowerCase());
                 const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
@@ -358,13 +435,11 @@
             });
 
             filtered.forEach(p => {
-                const skinIdentifier = p.mc || p.name.split(' ')[0];
-                const avatarUrl = `https://cravatar.eu/head/${skinIdentifier}/64.png?overlay`;
-                
+                const skinIdentifier = p.mc || p.name;
+                const avatarUrl = `https://mc-heads.net/avatar/${skinIdentifier}/64`;
                 const row = document.createElement('tr');
                 row.className = 'player-row';
                 
-                // Bestimme Badge Klasse
                 let badgeClass = 'badge-member';
                 if (p.type === 'vielleicht dabei') {
                     badgeClass = 'badge-maybe';
@@ -376,7 +451,11 @@
 
                 row.innerHTML = `
                     <td>
-                        <img src="${avatarUrl}" class="skin-head-small" alt="Skin" onerror="this.src='https://cravatar.eu/head/char/64.png'">
+                        <img src="${avatarUrl}" 
+                             class="skin-head-small" 
+                             alt="Skin" 
+                             onclick="openSkinModal('${p.name}', '${p.mc || ''}')"
+                             onerror="this.src='https://mc-heads.net/avatar/Steve/64'">
                     </td>
                     <td>
                         <span class="font-bold uppercase text-sm tracking-tight">${p.name}</span>
