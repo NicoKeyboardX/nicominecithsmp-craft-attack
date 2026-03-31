@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nicominecith SMP | Teilnehmerliste</title>
+    <title>Nicominecith SMP | Teilnehmer & Map</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -241,6 +241,7 @@
 
         .search-bar:focus { border-color: var(--red); }
 
+        /* Modal Core Styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -269,6 +270,11 @@
             border-radius: 2px;
         }
 
+        /* Specialized Map Modal Content */
+        .modal-content.map-modal-content {
+            max-width: 1000px;
+        }
+
         .rules-text {
             text-align: left;
             font-family: 'Inter', monospace;
@@ -287,6 +293,12 @@
             margin: 0 auto;
         }
 
+        .full-map-img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #222;
+        }
+
         .close-modal {
             position: absolute;
             top: 10px;
@@ -295,6 +307,7 @@
             font-size: 28px;
             cursor: pointer;
             padding: 5px;
+            z-index: 10;
         }
 
         footer {
@@ -329,11 +342,15 @@
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-3 px-4">
-            <a href="https://discord.gg/mBKjReQXHR" target="_blank" class="w-full sm:w-auto px-8 py-3 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-red-600 hover:text-white transition-colors text-center">
+        <!-- Aktions-Buttons inkl. Map Button -->
+        <div class="flex flex-col sm:flex-row justify-center gap-3 px-4 max-w-2xl mx-auto">
+            <a href="https://discord.gg/mBKjReQXHR" target="_blank" class="flex-1 px-4 py-3 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-red-600 hover:text-white transition-colors text-center">
                 <i class="fab fa-discord mr-2"></i> Discord
             </a>
-            <button onclick="openRulesModal()" class="w-full sm:w-auto px-8 py-3 border border-red-600 text-white font-black uppercase text-[11px] tracking-widest hover:bg-red-600 transition-colors">
+            <button onclick="openMapModal()" class="flex-1 px-4 py-3 border border-white text-white font-black uppercase text-[11px] tracking-widest hover:bg-white hover:text-black transition-colors">
+                <i class="fas fa-map mr-2"></i> Map Anzeigen
+            </button>
+            <button onclick="openRulesModal()" class="flex-1 px-4 py-3 border border-red-600 text-white font-black uppercase text-[11px] tracking-widest hover:bg-red-600 transition-colors">
                 <i class="fas fa-scroll mr-2"></i> Regeln
             </button>
         </div>
@@ -362,6 +379,8 @@
         </table>
     </main>
 
+    <!-- Modals -->
+    <!-- Skin Modal -->
     <div id="skinModal" class="modal-overlay" onclick="closeModal('skinModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('skinModal')">&times;</span>
@@ -373,6 +392,21 @@
         </div>
     </div>
 
+    <!-- Map Modal -->
+    <div id="mapModal" class="modal-overlay" onclick="closeModal('mapModal')">
+        <div class="modal-content map-modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('mapModal')">&times;</span>
+            <h2 class="font-black uppercase tracking-widest text-red-600 mb-4 text-lg">Projekt-Map Preview</h2>
+            <div class="bg-black/40 p-1 border border-zinc-800">
+                <div class="overflow-auto max-h-[65vh]">
+                    <img src="https://s1.directupload.eu/images/260331/9qqhwkae.png" class="full-map-img" alt="Nicominecith SMP Map">
+                </div>
+            </div>
+            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest">Die offizielle Weltkarte des SMPs</p>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
     <div id="rulesModal" class="modal-overlay" onclick="closeModal('rulesModal')">
         <div class="modal-content text-left" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('rulesModal')">&times;</span>
@@ -444,6 +478,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
     </footer>
 
     <script>
+        // Particles background
         const container = document.getElementById('particleContainer');
         const particleCount = window.innerWidth < 600 ? 15 : 30;
         for(let i=0; i<particleCount; i++) {
@@ -457,6 +492,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
             container.appendChild(p);
         }
 
+        // Participant Data
         const participants = [
             { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv", category: "streamer" },
             { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt", category: "streamer" },
@@ -502,6 +538,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
         const searchInput = document.getElementById('searchInput');
         const memberCountDisplay = document.getElementById('memberCount');
 
+        // Timer Logic
         function updateCountdown() {
             const targetDate = new Date("April 1, 2026 19:00:00").getTime();
             const now = new Date().getTime();
@@ -520,8 +557,14 @@ Ziel ist eine lebendige Welt mit eigener Story.
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
+        // Modal Functions
         function openRulesModal() {
             document.getElementById('rulesModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openMapModal() {
+            document.getElementById('mapModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
@@ -541,6 +584,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
             document.body.style.overflow = 'auto';
         }
 
+        // Filtering & Rendering
         function setCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.filter-btn').forEach(btn => {
