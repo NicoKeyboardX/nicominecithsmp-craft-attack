@@ -54,8 +54,37 @@
             100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
         }
 
+        /* Language Switcher Styles */
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            background: var(--gray-dark);
+            border: 1px solid var(--gray-mid);
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+        }
+
+        .lang-btn.active {
+            opacity: 1;
+            border-color: var(--red);
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+
         .hero {
-            padding: 40px 15px 20px;
+            padding: 60px 15px 20px;
             text-align: center;
             position: relative;
         }
@@ -267,7 +296,6 @@
 
         .search-bar:focus { border-color: var(--red); }
 
-        /* Modals */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -343,6 +371,7 @@
             .filter-btn { min-width: 30%; }
             .search-controls { flex-direction: column; }
             .sort-btn { padding: 12px; justify-content: center; }
+            .lang-switcher { top: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -350,19 +379,28 @@
 
     <div class="bg-wrapper" id="particleContainer"></div>
 
+    <div class="lang-switcher">
+        <button onclick="changeLanguage('de')" class="lang-btn active" id="btn-de">
+            <img src="https://flagcdn.com/w40/de.png" width="24" alt="DE">
+        </button>
+        <button onclick="changeLanguage('en')" class="lang-btn" id="btn-en">
+            <img src="https://flagcdn.com/w40/gb.png" width="24" alt="EN">
+        </button>
+    </div>
+
     <header class="hero">
         <h1 class="main-title">Nicominecith <span class="text-zinc-600">SMP</span></h1>
-        <div class="subtitle">Teilnehmer-Liste</div>
+        <div class="subtitle" data-i18n="subtitle">Teilnehmer-Liste</div>
         
         <div class="stats-bar">
             <div class="stat-card">
                 <span class="stat-value" id="memberCount">0</span>
-                <span class="stat-label">Spieler</span>
+                <span class="stat-label" data-i18n="stat_players">Spieler</span>
             </div>
             <div class="stat-card">
                 <span class="date-label">01. APRIL - 19:00</span>
                 <span class="stat-value" id="countdownTimer">00:00:00</span>
-                <span class="stat-label">Bis zum Start</span>
+                <span class="stat-label" data-i18n="stat_countdown">Bis zum Start</span>
             </div>
         </div>
 
@@ -371,24 +409,24 @@
                 <i class="fab fa-discord mr-2"></i> Discord
             </a>
             <button onclick="openMapModal()" class="flex-1 px-4 py-3 border border-white text-white font-black uppercase text-[11px] tracking-widest hover:bg-white hover:text-black transition-colors">
-                <i class="fas fa-map mr-2"></i> Map Anzeigen
+                <i class="fas fa-map mr-2"></i> <span data-i18n="btn_map">Map Anzeigen</span>
             </button>
             <button onclick="openRulesModal()" class="flex-1 px-4 py-3 border border-red-600 text-white font-black uppercase text-[11px] tracking-widest hover:bg-red-600 transition-colors">
-                <i class="fas fa-scroll mr-2"></i> Regeln
+                <i class="fas fa-scroll mr-2"></i> <span data-i18n="btn_rules">Regeln</span>
             </button>
         </div>
     </header>
 
     <div class="search-container">
         <div class="filter-container">
-            <button class="filter-btn active" onclick="setCategory('all')">Alle</button>
-            <button class="filter-btn" onclick="setCategory('streamer')">Streamer</button>
-            <button class="filter-btn" onclick="setCategory('member')">Member</button>
+            <button class="filter-btn active" onclick="setCategory('all')" data-i18n="filter_all">Alle</button>
+            <button class="filter-btn" onclick="setCategory('streamer')" data-i18n="filter_streamer">Streamer</button>
+            <button class="filter-btn" onclick="setCategory('member')" data-i18n="filter_member">Member</button>
         </div>
         <div class="search-controls">
-            <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN..." autocomplete="off">
+            <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN..." data-i18n-placeholder="search_placeholder" autocomplete="off">
             <button id="sortBtn" class="sort-btn" onclick="toggleSort()">
-                <i class="fas fa-sort-alpha-down"></i> <span id="sortLabel">A-Z</span>
+                <i class="fas fa-sort-alpha-down"></i> <span id="sortLabel" data-i18n="sort_az">A-Z</span>
             </button>
         </div>
     </div>
@@ -397,9 +435,9 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 55px;">Skin</th>
-                    <th>Name</th>
-                    <th class="hidden sm:table-cell">Status</th>
+                    <th style="width: 55px;" data-i18n="th_skin">Skin</th>
+                    <th data-i18n="th_name">Name</th>
+                    <th class="hidden sm:table-cell" data-i18n="th_status">Status</th>
                     <th style="width: 80px; text-align: right;">Twitch</th>
                 </tr>
             </thead>
@@ -407,7 +445,7 @@
         </table>
     </main>
 
-    <!-- Modals -->
+    <!-- Skin Modal -->
     <div id="skinModal" class="modal-overlay" onclick="closeModal('skinModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('skinModal')">&times;</span>
@@ -415,7 +453,7 @@
             <div class="flex justify-center">
                 <img id="fullSkinImg" src="" class="full-skin-img" alt="Voller Skin" onerror="this.src='https://mc-heads.net/body/Steve/400'">
             </div>
-            <p class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Minecraft Avatar Vorschau</p>
+            <p class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest" data-i18n="modal_skin_preview">Minecraft Avatar Vorschau</p>
         </div>
     </div>
 
@@ -423,13 +461,13 @@
     <div id="mapModal" class="modal-overlay" onclick="closeModal('mapModal')">
         <div class="modal-content max-w-[1000px] w-full" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('mapModal')">&times;</span>
-            <h2 class="font-black uppercase tracking-widest text-red-600 mb-4 text-lg">Projekt-Map Preview</h2>
+            <h2 class="font-black uppercase tracking-widest text-red-600 mb-4 text-lg" data-i18n="modal_map_title">Projekt-Map Preview</h2>
             <div class="bg-black/40 p-1 border border-zinc-800">
                 <div class="overflow-auto max-h-[65vh]">
                     <img src="https://s1.directupload.eu/images/260331/9ul7hsg6.png" class="w-full h-auto border border-zinc-900" alt="Nicominecith SMP Map">
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest">Offizielle Weltkarte des SMPs</p>
+            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest" data-i18n="modal_map_desc">Offizielle Weltkarte des SMPs</p>
         </div>
     </div>
 
@@ -437,122 +475,245 @@
     <div id="rulesModal" class="modal-overlay" onclick="closeModal('rulesModal')">
         <div class="modal-content text-left" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('rulesModal')">&times;</span>
-            <h2 class="font-black uppercase tracking-widest text-red-600 mb-6 border-b border-zinc-800 pb-3 text-lg">Regelwerk (V2.0)</h2>
-            <div class="rules-text">==================================================
-
-        CRAFT ATTACK: NICOMINECITH SMP         
-
-==================================================
-
-           PROJEKT-RICHTLINIEN 
-
-==================================================
-
-
-1. DAS PROJEKT-PRINZIP
-
---------------------------------------------------
-
-Dies ist ein Content- & Freebuild-Projekt. Das 
-
-Ziel ist eine lebendige Welt mit eigener Story.
-
-
-* KEIN GRIEFING: Wer mutwillig Dinge zerstört, 
-
-  fliegt sofort vom Server.
-
-* DIEBSTAHL: "Leihgaben" ohne Erlaubnis sind 
-
-  Diebstahl. Kisten-Inhalte sind privat!
-
-* PRANKS: Streiche gehören dazu! Aber: Sie müssen 
-
-  lustig sein, nicht zerstörerisch. Lava, Feuer 
-
-  oder das Töten von Haustieren ist VERBOTEN.
-
-
-2. DAS SPAWN-DORF & SHOPS
-
---------------------------------------------------
-
-* BAU-STYLE: Am Spawn wird "schön" gebaut. Keine 
-
-  unfertigen Klötze oder Dirt-Hütten.
-
-* WIRTSCHAFT: Diamanten sind das Gold des 
-
-  Servers. Nutzt das Shop-Viertel für Handel.
-
-* PERFORMANCE: Massive Redstone-Clocks oder 
-
-  Hunderte Entities am Spawn sind tabu (Lags!).
-
-
-3. TECHNIK & FAIRPLAY
-
---------------------------------------------------
-
-* MODS: Voice-Chat ist Pflicht ab jeder 2 Session für Interaktionen! 
-
-  Performance-Mods (Sodium/Iris) empfohlen.
-
-* CHEATS: X-Ray, Fullbright-Hacks oder Klicker 
-
-  führen zum permanenten Ausschluss.
-
-* FARM-LOGIK: Große Farmen (außerhalb vom Spawn) 
-
-  müssen abschaltbar sein (Lag-Prävention).
-
-
-4. PVP & STORY-KÄMPFE
-
---------------------------------------------------
-
-* CONSENT: Kämpfe nur nach Absprache oder im 
-
-  Rahmen einer angemeldeten Story-Fehde.
-
-* RDM (Random Killing): Willkürliches Killen 
-
-  stört den Spielfluss und wird sanktioniert.
-
-
-5. CONTENT-SCHUTZ (FÜR STREAMER/YOUTUBER)
-
---------------------------------------------------
-
-* STREAM-SNIPING: Das Ausnutzen von Streams für 
-
-  Vorteile oder Kills ist streng untersagt.
-
-* SPOILER: Geplante Events oder Story-Twists 
-
-  anderer Spieler nicht vorab verraten!
-
-* RESPEKT: Wir spielen MITEINANDER, nicht 
-
-  GEGENEINANDER.
-
-
-==================================================
-
-       CRAFT ATTACK - LET THE GAMES BEGIN!      
-
-==================================================</div>
-            <button onclick="closeModal('rulesModal')" class="w-full py-4 bg-red-600 text-white font-black uppercase text-xs tracking-widest hover:bg-red-700 active:scale-95 transition-all">
+            <h2 class="font-black uppercase tracking-widest text-red-600 mb-6 border-b border-zinc-800 pb-3 text-lg" data-i18n="modal_rules_title">Regelwerk (V2.0)</h2>
+            <div class="rules-text" id="rulesContent"></div>
+            <button onclick="closeModal('rulesModal')" class="w-full py-4 bg-red-600 text-white font-black uppercase text-xs tracking-widest hover:bg-red-700 active:scale-95 transition-all" data-i18n="modal_rules_close">
                 Verstanden
             </button>
         </div>
     </div>
 
-    <footer>
+    <footer data-i18n="footer">
         Nicominecith SMP &copy; 2026<br>Optimiert für Desktop & Mobile
     </footer>
 
     <script>
+        // --- MULTILINGUAL DATA ---
+        const translations = {
+            de: {
+                subtitle: "Teilnehmer-Liste",
+                stat_players: "Spieler",
+                stat_countdown: "Bis zum Start",
+                btn_map: "Map Anzeigen",
+                btn_rules: "Regeln",
+                filter_all: "Alle",
+                filter_streamer: "Streamer",
+                filter_member: "Member",
+                search_placeholder: "SPIELER SUCHEN...",
+                sort_az: "A-Z",
+                sort_za: "Z-A",
+                sort_rank: "Rang",
+                th_skin: "Skin",
+                th_name: "Name",
+                th_status: "Status",
+                modal_skin_preview: "Minecraft Avatar Vorschau",
+                modal_map_title: "Projekt-Map Preview",
+                modal_map_desc: "Offizielle Weltkarte des SMPs",
+                modal_rules_title: "Regelwerk (V2.0)",
+                modal_rules_close: "Verstanden",
+                footer: "Nicominecith SMP &copy; 2026<br>Optimiert für Desktop & Mobile",
+                live: "LIVE",
+                rules_text: `==================================================
+CRAFT ATTACK: NICOMINECITH SMP
+==================================================
+           PROJEKT-RICHTLINIEN 
+==================================================
+
+1. DAS PROJEKT-PRINZIP
+--------------------------------------------------
+Dies ist ein Content- & Freebuild-Projekt. Das 
+Ziel ist eine lebendige Welt mit eigener Story.
+
+* KEIN GRIEFING: Wer mutwillig Dinge zerstört, 
+  fliegt sofort vom Server.
+* DIEBSTAHL: "Leihgaben" ohne Erlaubnis sind 
+  Diebstahl. Kisten-Inhalte sind privat!
+* PRANKS: Streiche gehören dazu! Aber: Sie müssen 
+  lustig sein, nicht zerstörerisch. Lava, Feuer 
+  oder das Töten von Haustieren ist VERBOTEN.
+
+2. DAS SPAWN-DORF & SHOPS
+--------------------------------------------------
+* BAU-STYLE: Am Spawn wird "schön" gebaut. Keine 
+  unfertigen Klötze oder Dirt-Hütten.
+* WIRTSCHAFT: Diamanten sind das Gold des 
+  Servers. Nutzt das Shop-Viertel für Handel.
+* PERFORMANCE: Massive Redstone-Clocks oder 
+  Hunderte Entities am Spawn sind tabu (Lags!).
+
+3. TECHNIK & FAIRPLAY
+--------------------------------------------------
+* MODS: Voice-Chat ist Pflicht ab jeder 2 Session! 
+  Performance-Mods (Sodium/Iris) empfohlen.
+* CHEATS: X-Ray, Fullbright-Hacks oder Klicker 
+  führen zum permanenten Ausschluss.
+
+4. PVP & STORY-KÄMPFE
+--------------------------------------------------
+* CONSENT: Kämpfe nur nach Absprache oder im 
+  Rahmen einer angemeldeten Story-Fehde.
+
+==================================================
+       CRAFT ATTACK - LET THE GAMES BEGIN!      
+==================================================`
+            },
+            en: {
+                subtitle: "Participant List",
+                stat_players: "Players",
+                stat_countdown: "Until Start",
+                btn_map: "Show Map",
+                btn_rules: "Rules",
+                filter_all: "All",
+                filter_streamer: "Streamers",
+                filter_member: "Members",
+                search_placeholder: "SEARCH PLAYER...",
+                sort_az: "A-Z",
+                sort_za: "Z-A",
+                sort_rank: "Rank",
+                th_skin: "Skin",
+                th_name: "Name",
+                th_status: "Status",
+                modal_skin_preview: "Minecraft Avatar Preview",
+                modal_map_title: "Project Map Preview",
+                modal_map_desc: "Official SMP World Map",
+                modal_rules_title: "Rulebook (V2.0)",
+                modal_rules_close: "Got it",
+                footer: "Nicominecith SMP &copy; 2026<br>Optimized for Desktop & Mobile",
+                live: "LIVE",
+                rules_text: `==================================================
+CRAFT ATTACK: NICOMINECITH SMP
+==================================================
+           PROJECT GUIDELINES 
+==================================================
+
+1. THE PROJECT PRINCIPLE
+--------------------------------------------------
+This is a content & freebuild project. The 
+goal is a living world with its own story.
+
+* NO GRIEFING: Anyone who intentionally destroys 
+  things will be banned immediately.
+* THEFT: "Loans" without permission are 
+  theft. Chest contents are private!
+* PRANKS: Pranks are part of the game! But: They 
+  must be funny, not destructive. Lava, fire, 
+  or killing pets is FORBIDDEN.
+
+2. SPAWN VILLAGE & SHOPS
+--------------------------------------------------
+* BUILD STYLE: Build "beautifully" at spawn. No 
+  unfinished blocks or dirt huts.
+* ECONOMY: Diamonds are the gold of the 
+  server. Use the shop district for trading.
+* PERFORMANCE: Massive Redstone clocks or 
+  hundreds of entities at spawn are tabu (Lags!).
+
+3. TECH & FAIR PLAY
+--------------------------------------------------
+* MODS: Voice chat is mandatory from every 2nd session! 
+  Performance mods (Sodium/Iris) recommended.
+* CHEATS: X-Ray, Fullbright hacks, or clickers 
+  lead to a permanent ban.
+
+4. PVP & STORY FIGHTS
+--------------------------------------------------
+* CONSENT: Fight only by agreement or within 
+  the framework of a registered story feud.
+
+==================================================
+       CRAFT ATTACK - LET THE GAMES BEGIN!      
+==================================================`
+            }
+        };
+
+        let currentLang = 'de';
+
+        // --- PARTICIPANTS ---
+        const participants = [
+            { name: "Nicominecith", type: { de: "Projektleiter", en: "Project Lead" }, twitch: "nicominecith_ttv", category: "streamer", rank: 1 },
+            { name: "jaime_zockt", type: { de: "Creator", en: "Creator" }, twitch: "jaime_zockt", category: "streamer", rank: 2 },
+            { name: "jeypiegc", type: { de: "Creator", en: "Creator" }, twitch: "jeypiegc", category: "streamer", rank: 2 },
+            { name: "Benneno235", type: { de: "Nicht zum Start da", en: "Absent at launch" }, category: "member", rank: 3 },
+            { name: "XJonTendoX", type: { de: "Creator", en: "Creator" }, twitch: "XJonTendoX", category: "streamer", rank: 2 },
+            { name: "sebikaacat", type: { de: "Creator", en: "Creator" }, twitch: "sebikaacat", category: "streamer", rank: 2 },
+            { name: "der_fynn10", type: { de: "Creator", en: "Creator" }, twitch: "der_fynn10", category: "streamer", rank: 2 },
+            { name: "hektor_422", type: { de: "Creator", en: "Creator" }, twitch: "hektor_422", category: "streamer", rank: 2 },
+            { name: "RZ Lian", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Optimalst0rm", type: { de: "vielleicht dabei", en: "Maybe participating" }, category: "member", rank: 4 },
+            { name: "Elias", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "davidgamingtv", type: { de: "vielleicht dabei", en: "Maybe participating" }, twitch: "davidgamingtv", category: "streamer", rank: 4 },
+            { name: "monkey_3420", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "palyoug", type: { de: "Creator", en: "Creator" }, twitch: "palyoug", category: "streamer", rank: 2 },
+            { name: "niebuco", type: { de: "Creator", en: "Creator" }, twitch: "niebuco", category: "streamer", rank: 2 },
+            { name: "Beacon", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "fnkamikaze", type: { de: "Creator", en: "Creator" }, twitch: "fnkamikaze", category: "streamer", rank: 2 },
+            { name: "n1ghtdreams_", type: { de: "Creator", en: "Creator" }, twitch: "n1ghtdreams_", category: "streamer", rank: 2 },
+            { name: "whithhd", type: { de: "Creator", en: "Creator" }, twitch: "whithhd", category: "streamer", rank: 2 },
+            { name: "blaqqhd", type: { de: "Creator", en: "Creator" }, twitch: "blaqqhd", category: "streamer", rank: 2 },
+            { name: "Alessio332", mc: "Ale2k", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "BrotSpokyy", type: { de: "Creator", en: "Creator" }, twitch: "BrotSpokyy", category: "streamer", rank: 2 },
+            { name: "gemer703", type: { de: "vielleicht dabei", en: "Maybe participating" }, category: "member", rank: 4 },
+            { name: "Lykron", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Basti_Bam", type: { de: "Creator", en: "Creator" }, twitch: "bastibamyt", category: "streamer", rank: 2 },
+            { name: "abgez0ckt_", type: { de: "Creator", en: "Creator" }, twitch: "abgez0ckt_", category: "streamer", rank: 2 },
+            { name: "danielefrz12", mc: "Barbaroschki1893", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Raketeleon14", type: { de: "vielleicht dabei", en: "Maybe participating" }, category: "member", rank: 4 },
+            { name: "Frymost", type: { de: "Creator", en: "Creator" }, twitch: "frymost0", category: "streamer", rank: 2 },
+            { name: "vextre_live", type: { de: "Creator", en: "Creator" }, twitch: "vextre_live", category: "streamer", rank: 2 },
+            { name: "justlouis2k", type: { de: "Creator", en: "Creator" }, twitch: "justlouis2k", category: "streamer", rank: 2 },
+            { name: "Marlon8663", type: { de: "Creator", en: "Creator" }, twitch: "cookie_spieler", category: "streamer", rank: 2 },
+            { name: "HanniBunny4Real", type: { de: "Creator", en: "Creator" }, twitch: "hannes79012", category: "streamer", rank: 2 },
+            { name: "rayplaylg", mc: "Nayar167", type: { de: "Creator", en: "Creator" }, twitch: "rayplaylg", category: "streamer", rank: 2 },
+            { name: "Rainer8229", type: { de: "Creator", en: "Creator" }, twitch: "rainer82295", category: "streamer", rank: 2 },
+            { name: "PfifferllingerYT", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Kristloxmc", mc: "Kristlox2x", type: { de: "Creator", en: "Creator" }, twitch: "Kristloxmc", category: "streamer", rank: 2 },
+            { name: "DixiDavid", mc: "DixiDavid", type: { de: "Creator", en: "Creator" }, twitch: "noscopedavid", category: "streamer", rank: 2 },
+            { name: "trigger2247", mc: "trigger2247", type: { de: "Creator", en: "Creator" }, twitch: "neoncat112w", category: "streamer", rank: 2 },
+            { name: "voidcraft419", mc: "voidcraft419", type: { de: "Creator", en: "Creator" }, twitch: "voidcraft419", category: "streamer", rank: 2 },
+            { name: "Mats1200", mc: "Mats1200", type: { de: "Creator", en: "Creator" }, twitch: "themazzzy", category: "streamer", rank: 2 },
+            { name: "Plemix", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "SkylemonYT", mc: "SkylemonYT", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Dvckzyy", mc: "Dvckzyy", type: { de: "Member", en: "Member" }, category: "member", rank: 3 },
+            { name: "Nohaldino", type: { de: "Member", en: "Member" }, category: "member", rank: 3 }
+        ];
+
+        let currentCategory = 'all';
+        let sortOrder = 'az'; // 'default', 'az', 'za'
+        const tableBody = document.getElementById('playerTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const memberCountDisplay = document.getElementById('memberCount');
+
+        // --- CORE FUNCTIONS ---
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+
+            // Translate static elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.innerHTML = translations[lang][key];
+            });
+
+            // Translate placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = translations[lang][key];
+            });
+
+            // Update Sort Label based on state
+            const sortLabel = document.getElementById('sortLabel');
+            if (sortOrder === 'az') sortLabel.innerText = translations[lang].sort_az;
+            else if (sortOrder === 'za') sortLabel.innerText = translations[lang].sort_za;
+            else sortLabel.innerText = translations[lang].sort_rank;
+
+            // Update rules
+            document.getElementById('rulesContent').innerText = translations[lang].rules_text;
+
+            render(searchInput.value);
+        }
+
         // Particles background
         const container = document.getElementById('particleContainer');
         const particleCount = window.innerWidth < 600 ? 15 : 30;
@@ -567,69 +728,13 @@ Ziel ist eine lebendige Welt mit eigener Story.
             container.appendChild(p);
         }
 
-        // Participant Data
-        const participants = [
-            { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv", category: "streamer", rank: 1 },
-            { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt", category: "streamer", rank: 2 },
-            { name: "jeypiegc", type: "Creator", twitch: "jeypiegc", category: "streamer", rank: 2 },
-            { name: "Benneno235", type: "Nicht am Release da", category: "member", rank: 3 },
-            { name: "XJonTendoX", type: "Creator", twitch: "XJonTendoX", category: "streamer", rank: 2 },
-            { name: "sebikaacat", type: "Creator", twitch: "sebikaacat", category: "streamer", rank: 2 },
-            { name: "der_fynn10", type: "Creator", twitch: "der_fynn10", category: "streamer", rank: 2 },
-            { name: "hektor_422", type: "Creator", twitch: "hektor_422", category: "streamer", rank: 2 },
-            { name: "RZ Lian", type: "Member", category: "member", rank: 3 },
-            { name: "Optimalst0rm", type: "vielleicht dabei", category: "member", rank: 4 },
-            { name: "Elias", type: "Member", category: "member", rank: 3 },
-            { name: "davidgamingtv", type: "vielleicht dabei", twitch: "davidgamingtv", category: "streamer", rank: 4 },
-            { name: "monkey_3420", type: "Member", category: "member", rank: 3 },
-            { name: "palyoug", type: "Creator", twitch: "palyoug", category: "streamer", rank: 2 },
-            { name: "niebuco", type: "Creator", twitch: "niebuco", category: "streamer", rank: 2 },
-            { name: "Beacon", type: "Member", category: "member", rank: 3 },
-            { name: "fnkamikaze", type: "Creator", twitch: "fnkamikaze", category: "streamer", rank: 2 },
-            { name: "n1ghtdreams_", type: "Creator", twitch: "n1ghtdreams_", category: "streamer", rank: 2 },
-            { name: "whithhd", type: "Creator", twitch: "whithhd", category: "streamer", rank: 2 },
-            { name: "blaqqhd", type: "Creator", twitch: "blaqqhd", category: "streamer", rank: 2 },
-            { name: "Alessio332", mc: "Ale2k", type: "Member", category: "member", rank: 3 },
-            { name: "BrotSpokyy", type: "Creator", twitch: "BrotSpokyy", category: "streamer", rank: 2 },
-            { name: "gemer703", type: "vielleicht dabei", category: "member", rank: 4 },
-            { name: "Lykron", type: "Member", category: "member", rank: 3 },
-            { name: "Basti_Bam", type: "Creator", twitch: "bastibamyt", category: "streamer", rank: 2 },
-            { name: "abgez0ckt_", type: "Creator", twitch: "abgez0ckt_", category: "streamer", rank: 2 },
-            { name: "danielefrz12", mc: "Barbaroschki1893", type: "Member", category: "member", rank: 3 },
-            { name: "Raketeleon14", type: "vielleicht dabei", category: "member", rank: 4 },
-            { name: "Frymost", type: "Creator", twitch: "frymost0", category: "streamer", rank: 2 },
-            { name: "vextre_live", type: "Creator", twitch: "vextre_live", category: "streamer", rank: 2 },
-            { name: "justlouis2k", type: "Creator", twitch: "justlouis2k", category: "streamer", rank: 2 },
-            { name: "Marlon8663", type: "Creator", twitch: "cookie_spieler", category: "streamer", rank: 2 },
-            { name: "HanniBunny4Real", type: "Creator", twitch: "hannes79012", category: "streamer", rank: 2 },
-            { name: "rayplaylg", mc: "Nayar167", type: "Creator", twitch: "rayplaylg", category: "streamer", rank: 2 },
-            { name: "Rainer8229", type: "Creator", twitch: "rainer82295", category: "streamer", rank: 2 },
-            { name: "PfifferllingerYT", type: "Member", category: "member", rank: 3 },
-            { name: "Kristloxmc", mc: "Kristlox2x", type: "Creator", twitch: "Kristloxmc", category: "streamer", rank: 2 },
-            { name: "rainer82295", type: "Creator", twitch: "rainer82295", category: "streamer", rank: 2 },
-            { name: "DixiDavid", mc: "DixiDavid", type: "Creator", twitch: "noscopedavid", category: "streamer", rank: 2 },
-            { name: "trigger2247", mc: "trigger2247", type: "Creator", twitch: "neoncat112w", category: "streamer", rank: 2 },
-            { name: "voidcraft419", mc: "voidcraft419", type: "Creator", twitch: "voidcraft419", category: "streamer", rank: 2 },
-            { name: "Mats1200", mc: "Mats1200", type: "Creator", twitch: "themazzzy", category: "streamer", rank: 2 },
-            { name: "Plemix", type: "Member", category: "member", rank: 3 },
-            { name: "SkylemonYT", mc: "SkylemonYT", type: "Member", category: "member", rank: 3 },
-            { name: "Dvckzyy", mc: "Dvckzyy", type: "Member", category: "member", rank: 3 },
-            { name: "Nohaldino", type: "Member", category: "member", rank: 3 }
-        ];
-
-        let currentCategory = 'all';
-        let sortOrder = 'default'; // 'default', 'az', 'za'
-        const tableBody = document.getElementById('playerTableBody');
-        const searchInput = document.getElementById('searchInput');
-        const memberCountDisplay = document.getElementById('memberCount');
-
         // Timer Logic
         function updateCountdown() {
             const targetDate = new Date("April 1, 2026 19:00:00").getTime();
             const now = new Date().getTime();
             const diff = targetDate - now;
             if (diff <= 0) {
-                document.getElementById('countdownTimer').innerText = "LIVE";
+                document.getElementById('countdownTimer').innerText = translations[currentLang].live;
                 return;
             }
             const h = Math.floor(diff / (1000 * 60 * 60));
@@ -653,12 +758,11 @@ Ziel ist eine lebendige Welt mit eigener Story.
             document.body.style.overflow = 'hidden';
         }
 
-        // Filtering & Sorting Logic
         function setCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                const btnText = btn.innerText.toLowerCase();
-                btn.classList.toggle('active', btnText === cat || (cat === 'all' && btnText === 'alle'));
+                const btnAction = btn.getAttribute('onclick');
+                btn.classList.toggle('active', btnAction.includes(`'${cat}'`));
             });
             render(searchInput.value);
         }
@@ -669,15 +773,15 @@ Ziel ist eine lebendige Welt mit eigener Story.
             
             if (sortOrder === 'default') {
                 sortOrder = 'az';
-                label.innerText = 'A-Z';
+                label.innerText = translations[currentLang].sort_az;
                 icon.className = 'fas fa-sort-alpha-down';
             } else if (sortOrder === 'az') {
                 sortOrder = 'za';
-                label.innerText = 'Z-A';
+                label.innerText = translations[currentLang].sort_za;
                 icon.className = 'fas fa-sort-alpha-up';
             } else {
                 sortOrder = 'default';
-                label.innerText = 'Rang';
+                label.innerText = translations[currentLang].sort_rank;
                 icon.className = 'fas fa-crown';
             }
             render(searchInput.value);
@@ -686,14 +790,12 @@ Ziel ist eine lebendige Welt mit eigener Story.
         function render(filterText = '') {
             tableBody.innerHTML = '';
             
-            // 1. Filtern
             let filtered = participants.filter(p => {
                 const matchesSearch = p.name.toLowerCase().includes(filterText.toLowerCase());
                 const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
                 return matchesSearch && matchesCategory;
             });
 
-            // 2. Sortieren
             if (sortOrder === 'az') {
                 filtered.sort((a, b) => a.name.localeCompare(b.name));
             } else if (sortOrder === 'za') {
@@ -710,8 +812,10 @@ Ziel ist eine lebendige Welt mit eigener Story.
                 row.className = 'player-row';
                 
                 let badgeClass = 'badge-member';
-                const lowerType = p.type.toLowerCase();
-                if (lowerType.includes('vielleicht') || lowerType.includes('nicht')) {
+                const typeText = p.type[currentLang];
+                const lowerType = typeText.toLowerCase();
+
+                if (lowerType.includes('vielleicht') || lowerType.includes('maybe') || lowerType.includes('nicht') || lowerType.includes('absent')) {
                     badgeClass = 'badge-maybe';
                 } else if(p.category === 'streamer' || p.rank === 1) {
                     badgeClass = 'badge-red';
@@ -727,11 +831,11 @@ Ziel ist eine lebendige Welt mit eigener Story.
                     <td>
                         <div class="flex flex-col">
                             <span class="font-bold uppercase text-[12px] sm:text-sm tracking-tight">${p.name}</span>
-                            <span class="sm:hidden mt-1"><span class="badge ${badgeClass}">${p.type}</span></span>
+                            <span class="sm:hidden mt-1"><span class="badge ${badgeClass}">${typeText}</span></span>
                         </div>
                     </td>
                     <td class="hidden sm:table-cell">
-                        <span class="badge ${badgeClass}">${p.type}</span>
+                        <span class="badge ${badgeClass}">${typeText}</span>
                     </td>
                     <td style="text-align: right; padding-right: 15px;">
                         ${p.twitch ? `
@@ -746,7 +850,10 @@ Ziel ist eine lebendige Welt mit eigener Story.
         }
 
         searchInput.addEventListener('input', (e) => render(e.target.value));
-        window.onload = () => render();
+        
+        window.onload = () => {
+            changeLanguage('de'); // Start with German
+        };
     </script>
 </body>
 </html>
