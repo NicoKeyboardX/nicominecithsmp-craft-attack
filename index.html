@@ -158,6 +158,32 @@
             background: rgba(255, 0, 0, 0.1);
         }
 
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .sort-btn {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            color: var(--red);
+            padding: 0 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .sort-btn:hover {
+            border-color: var(--red);
+            background: rgba(255,0,0,0.05);
+        }
+
         .table-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -185,24 +211,25 @@
             transition: transform 0.2s ease;
         }
 
+        tr.player-row:hover {
+            transform: scale(1.01);
+            background: #0f0f0f;
+        }
+
         td {
             padding: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @media (max-width: 480px) {
-            th:nth-child(3), td:nth-child(3) { display: none; }
-            .stat-card { min-width: 45%; }
-        }
-
         .skin-head-small {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             image-rendering: pixelated;
             border-radius: 4px;
             cursor: pointer;
             background-color: #111;
+            border: 1px solid #222;
         }
 
         .badge {
@@ -216,9 +243,9 @@
             white-space: nowrap;
         }
 
-        .badge-red { color: var(--red); border: 1px solid rgba(255, 0, 0, 0.3); }
-        .badge-member { color: #00ccff; border: 1px solid rgba(0, 204, 255, 0.3); }
-        .badge-maybe { color: var(--maybe-blue); border: 1px solid rgba(112, 0, 255, 0.4); }
+        .badge-red { color: var(--red); border: 1px solid rgba(255, 0, 0, 0.3); background: rgba(255, 0, 0, 0.05); }
+        .badge-member { color: #00ccff; border: 1px solid rgba(0, 204, 255, 0.3); background: rgba(0, 204, 255, 0.05); }
+        .badge-maybe { color: var(--maybe-blue); border: 1px solid rgba(112, 0, 255, 0.4); background: rgba(112, 0, 255, 0.05); }
 
         .search-container {
             max-width: 1000px;
@@ -227,7 +254,7 @@
         }
 
         .search-bar {
-            width: 100%;
+            flex-grow: 1;
             background: #0a0a0a;
             border: 1px solid #1a1a1a;
             color: white;
@@ -235,13 +262,12 @@
             font-size: 0.9rem;
             font-weight: 700;
             outline: none;
-            border-radius: 0;
-            appearance: none;
+            border-radius: 4px;
         }
 
         .search-bar:focus { border-color: var(--red); }
 
-        /* Modal Core Styles */
+        /* Modals */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -267,12 +293,8 @@
             max-width: 500px;
             max-height: 85vh;
             overflow-y: auto;
-            border-radius: 2px;
-        }
-
-        /* Specialized Map Modal Content */
-        .modal-content.map-modal-content {
-            max-width: 1000px;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
         }
 
         .rules-text {
@@ -288,15 +310,9 @@
         }
 
         .full-skin-img {
-            max-height: 40vh;
+            max-height: 50vh;
             image-rendering: pixelated;
             margin: 0 auto;
-        }
-
-        .full-map-img {
-            width: 100%;
-            height: auto;
-            border: 1px solid #222;
         }
 
         .close-modal {
@@ -311,15 +327,23 @@
         }
 
         footer {
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
             color: #444;
             font-size: 0.6rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
+            border-top: 1px solid #111;
         }
 
+        @media (max-width: 480px) {
+            th:nth-child(3), td:nth-child(3) { display: none; }
+            .stat-card { min-width: 45%; }
+            .filter-btn { min-width: 30%; }
+            .search-controls { flex-direction: column; }
+            .sort-btn { padding: 12px; justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -342,7 +366,6 @@
             </div>
         </div>
 
-        <!-- Aktions-Buttons inkl. Map Button -->
         <div class="flex flex-col sm:flex-row justify-center gap-3 px-4 max-w-2xl mx-auto">
             <a href="https://discord.gg/mBKjReQXHR" target="_blank" class="flex-1 px-4 py-3 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-red-600 hover:text-white transition-colors text-center">
                 <i class="fab fa-discord mr-2"></i> Discord
@@ -362,17 +385,22 @@
             <button class="filter-btn" onclick="setCategory('streamer')">Streamer</button>
             <button class="filter-btn" onclick="setCategory('member')">Member</button>
         </div>
-        <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN..." autocomplete="off">
+        <div class="search-controls">
+            <input type="text" id="searchInput" class="search-bar" placeholder="SPIELER SUCHEN..." autocomplete="off">
+            <button id="sortBtn" class="sort-btn" onclick="toggleSort()">
+                <i class="fas fa-sort-alpha-down"></i> <span id="sortLabel">A-Z</span>
+            </button>
+        </div>
     </div>
 
     <main class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th style="width: 45px;">Skin</th>
+                    <th style="width: 55px;">Skin</th>
                     <th>Name</th>
                     <th class="hidden sm:table-cell">Status</th>
-                    <th style="width: 60px; text-align: right;">Links</th>
+                    <th style="width: 80px; text-align: right;">Twitch</th>
                 </tr>
             </thead>
             <tbody id="playerTableBody"></tbody>
@@ -380,29 +408,28 @@
     </main>
 
     <!-- Modals -->
-    <!-- Skin Modal -->
     <div id="skinModal" class="modal-overlay" onclick="closeModal('skinModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('skinModal')">&times;</span>
             <h2 id="modalPlayerName" class="font-black uppercase tracking-widest text-red-600 mb-6 text-lg">Spieler</h2>
             <div class="flex justify-center">
-                <img id="fullSkinImg" src="" class="full-skin-img" alt="Voller Skin" onerror="this.src='https://mc-heads.net/body/Steve/350'">
+                <img id="fullSkinImg" src="" class="full-skin-img" alt="Voller Skin" onerror="this.src='https://mc-heads.net/body/Steve/400'">
             </div>
-            <p class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Minecraft Avatar</p>
+            <p class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Minecraft Avatar Vorschau</p>
         </div>
     </div>
 
     <!-- Map Modal -->
     <div id="mapModal" class="modal-overlay" onclick="closeModal('mapModal')">
-        <div class="modal-content map-modal-content" onclick="event.stopPropagation()">
+        <div class="modal-content max-w-[1000px] w-full" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal('mapModal')">&times;</span>
             <h2 class="font-black uppercase tracking-widest text-red-600 mb-4 text-lg">Projekt-Map Preview</h2>
             <div class="bg-black/40 p-1 border border-zinc-800">
                 <div class="overflow-auto max-h-[65vh]">
-                    <img src="https://s1.directupload.eu/images/260331/9ul7hsg6.png" class="full-map-img" alt="Nicominecith SMP Map">
+                    <img src="https://s1.directupload.eu/images/260331/9ul7hsg6.png" class="w-full h-auto border border-zinc-900" alt="Nicominecith SMP Map">
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest">Die offizielle Weltkarte des SMPs</p>
+            <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest">Offizielle Weltkarte des SMPs</p>
         </div>
     </div>
 
@@ -412,60 +439,108 @@
             <span class="close-modal" onclick="closeModal('rulesModal')">&times;</span>
             <h2 class="font-black uppercase tracking-widest text-red-600 mb-6 border-b border-zinc-800 pb-3 text-lg">Regelwerk (V2.0)</h2>
             <div class="rules-text">==================================================
+
         CRAFT ATTACK: NICOMINECITH SMP         
+
 ==================================================
+
            PROJEKT-RICHTLINIEN 
+
 ==================================================
+
 
 1. DAS PROJEKT-PRINZIP
+
 --------------------------------------------------
+
 Dies ist ein Content- & Freebuild-Projekt. Das 
+
 Ziel ist eine lebendige Welt mit eigener Story.
 
+
 * KEIN GRIEFING: Wer mutwillig Dinge zerstört, 
+
   fliegt sofort vom Server.
+
 * DIEBSTAHL: "Leihgaben" ohne Erlaubnis sind 
+
   Diebstahl. Kisten-Inhalte sind privat!
+
 * PRANKS: Streiche gehören dazu! Aber: Sie müssen 
+
   lustig sein, nicht zerstörerisch. Lava, Feuer 
+
   oder das Töten von Haustieren ist VERBOTEN.
 
+
 2. DAS SPAWN-DORF & SHOPS
+
 --------------------------------------------------
+
 * BAU-STYLE: Am Spawn wird "schön" gebaut. Keine 
+
   unfertigen Klötze oder Dirt-Hütten.
+
 * WIRTSCHAFT: Diamanten sind das Gold des 
+
   Servers. Nutzt das Shop-Viertel für Handel.
+
 * PERFORMANCE: Massive Redstone-Clocks oder 
+
   Hunderte Entities am Spawn sind tabu (Lags!).
 
+
 3. TECHNIK & FAIRPLAY
+
 --------------------------------------------------
+
 * MODS: Voice-Chat ist Pflicht ab jeder 2 Session für Interaktionen! 
+
   Performance-Mods (Sodium/Iris) empfohlen.
+
 * CHEATS: X-Ray, Fullbright-Hacks oder Klicker 
+
   führen zum permanenten Ausschluss.
+
 * FARM-LOGIK: Große Farmen (außerhalb vom Spawn) 
+
   müssen abschaltbar sein (Lag-Prävention).
 
+
 4. PVP & STORY-KÄMPFE
+
 --------------------------------------------------
+
 * CONSENT: Kämpfe nur nach Absprache oder im 
+
   Rahmen einer angemeldeten Story-Fehde.
+
 * RDM (Random Killing): Willkürliches Killen 
+
   stört den Spielfluss und wird sanktioniert.
 
+
 5. CONTENT-SCHUTZ (FÜR STREAMER/YOUTUBER)
+
 --------------------------------------------------
+
 * STREAM-SNIPING: Das Ausnutzen von Streams für 
+
   Vorteile oder Kills ist streng untersagt.
+
 * SPOILER: Geplante Events oder Story-Twists 
+
   anderer Spieler nicht vorab verraten!
+
 * RESPEKT: Wir spielen MITEINANDER, nicht 
+
   GEGENEINANDER.
 
+
 ==================================================
+
        CRAFT ATTACK - LET THE GAMES BEGIN!      
+
 ==================================================</div>
             <button onclick="closeModal('rulesModal')" class="w-full py-4 bg-red-600 text-white font-black uppercase text-xs tracking-widest hover:bg-red-700 active:scale-95 transition-all">
                 Verstanden
@@ -474,7 +549,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
     </div>
 
     <footer>
-        Nicominecith SMP &copy; 2026<br>Optimiert für PC & Handy
+        Nicominecith SMP &copy; 2026<br>Optimiert für Desktop & Mobile
     </footer>
 
     <script>
@@ -494,47 +569,48 @@ Ziel ist eine lebendige Welt mit eigener Story.
 
         // Participant Data
         const participants = [
-            { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv", category: "streamer" },
-            { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt", category: "streamer" },
-            { name: "jeypiegc", type: "Creator", twitch: "jeypiegc", category: "streamer" },
-            { name: "Benneno235", type: "Nicht am Release da", category: "member" },
-            { name: "XJonTendoX", type: "Creator", twitch: "XJonTendoX", category: "streamer" },
-            { name: "sebikaacat", type: "Creator", twitch: "sebikaacat", category: "streamer" },
-            { name: "der_fynn10", type: "Creator", twitch: "der_fynn10", category: "streamer" },
-            { name: "hektor_422", type: "Creator", twitch: "hektor_422", category: "streamer" },
-            { name: "RZ Lian", type: "Member", category: "member" },
-            { name: "Optimalst0rm", type: "vielleicht dabei", category: "member" },
-            { name: "Elias", type: "Member", category: "member" },
-            { name: "davidgamingtv", type: "vielleicht dabei", twitch: "davidgamingtv", category: "streamer" },
-            { name: "monkey_3420", type: "Member", category: "member" },
-            { name: "palyoug", type: "Creator", twitch: "palyoug", category: "streamer" },
-            { name: "niebuco", type: "Creator", twitch: "niebuco", category: "streamer" },
-            { name: "Beacon", type: "Member", category: "member" },
-            { name: "fnkamikaze", type: "Creator", twitch: "fnkamikaze", category: "streamer" },
-            { name: "n1ghtdreams_", type: "Creator", twitch: "n1ghtdreams_", category: "streamer" },
-            { name: "whithhd", type: "Creator", twitch: "whithhd", category: "streamer" },
-            { name: "blaqqhd", type: "Creator", twitch: "blaqqhd", category: "streamer" },
-            { name: "Alessio332", mc: "Ale2k", type: "Member", category: "member" },
-            { name: "BrotSpokyy", mc: "BrotSpokyy", type: "Creator", twitch: "BrotSpokyy", category: "streamer" },
-            { name: "gemer703", mc: "Gemer703", type: "vielleicht dabei", category: "member" },
-            { name: "Lykron", mc: "Lykron", type: "Member", category: "member" },
-            { name: "Basti_Bam", mc: "Basti_Bam", type: "Creator", twitch: "bastibamyt", category: "streamer" },
-            { name: "abgez0ckt_", mc: "abgez0ckt_", type: "Creator", twitch: "abgez0ckt_", category: "streamer" },
-            { name: "danielefrz12", mc: "Barbaroschki1893", type: "Member", category: "member" },
-            { name: "Raketeleon14", mc: "Raketeleon14", type: "vielleicht dabei", category: "member" },
-            { name: "Frymost", mc: "Frymost", type: "Creator", twitch: "frymost0", category: "streamer" },
-            { name: "vextre_live", mc: "vextre_live", type: "Creator", twitch: "vextre_live", category: "streamer" },
-            { name: "justlouis2k", mc: "justlouis2k", type: "Creator", twitch: "justlouis2k", category: "streamer" },
-            { name: "Marlon8663", mc: "Marlon8663", type: "Creator", twitch: "cookie_spieler", category: "streamer" },
-            { name: "HanniBunny4Real", mc: "HanniBunny4Real", type: "Creator", twitch: "hannes79012", category: "streamer" },
-            { name: "rayplaylg", mc: "Nayar167", type: "Creator", twitch: "rayplaylg", category: "streamer" },
-            { name: "Rainer8229", mc: "Rainer8229", type: "Creator", twitch: "rainer82295", category: "streamer" },
-            { name: "PfifferllingerYT", mc: "PfifferllingerYT", type: "Member", category: "member" },
-            { name: "Plemix", mc: "Plemix", type: "Member", category: "member" },
-            { name: "Nohaldino", mc: "Nohaldino", type: "Member", category: "member" }
+            { name: "Nicominecith", type: "Projektleiter", twitch: "nicominecith_ttv", category: "streamer", rank: 1 },
+            { name: "jaime_zockt", type: "Creator", twitch: "jaime_zockt", category: "streamer", rank: 2 },
+            { name: "jeypiegc", type: "Creator", twitch: "jeypiegc", category: "streamer", rank: 2 },
+            { name: "Benneno235", type: "Nicht am Release da", category: "member", rank: 3 },
+            { name: "XJonTendoX", type: "Creator", twitch: "XJonTendoX", category: "streamer", rank: 2 },
+            { name: "sebikaacat", type: "Creator", twitch: "sebikaacat", category: "streamer", rank: 2 },
+            { name: "der_fynn10", type: "Creator", twitch: "der_fynn10", category: "streamer", rank: 2 },
+            { name: "hektor_422", type: "Creator", twitch: "hektor_422", category: "streamer", rank: 2 },
+            { name: "RZ Lian", type: "Member", category: "member", rank: 3 },
+            { name: "Optimalst0rm", type: "vielleicht dabei", category: "member", rank: 4 },
+            { name: "Elias", type: "Member", category: "member", rank: 3 },
+            { name: "davidgamingtv", type: "vielleicht dabei", twitch: "davidgamingtv", category: "streamer", rank: 4 },
+            { name: "monkey_3420", type: "Member", category: "member", rank: 3 },
+            { name: "palyoug", type: "Creator", twitch: "palyoug", category: "streamer", rank: 2 },
+            { name: "niebuco", type: "Creator", twitch: "niebuco", category: "streamer", rank: 2 },
+            { name: "Beacon", type: "Member", category: "member", rank: 3 },
+            { name: "fnkamikaze", type: "Creator", twitch: "fnkamikaze", category: "streamer", rank: 2 },
+            { name: "n1ghtdreams_", type: "Creator", twitch: "n1ghtdreams_", category: "streamer", rank: 2 },
+            { name: "whithhd", type: "Creator", twitch: "whithhd", category: "streamer", rank: 2 },
+            { name: "blaqqhd", type: "Creator", twitch: "blaqqhd", category: "streamer", rank: 2 },
+            { name: "Alessio332", mc: "Ale2k", type: "Member", category: "member", rank: 3 },
+            { name: "BrotSpokyy", type: "Creator", twitch: "BrotSpokyy", category: "streamer", rank: 2 },
+            { name: "gemer703", type: "vielleicht dabei", category: "member", rank: 4 },
+            { name: "Lykron", type: "Member", category: "member", rank: 3 },
+            { name: "Basti_Bam", type: "Creator", twitch: "bastibamyt", category: "streamer", rank: 2 },
+            { name: "abgez0ckt_", type: "Creator", twitch: "abgez0ckt_", category: "streamer", rank: 2 },
+            { name: "danielefrz12", mc: "Barbaroschki1893", type: "Member", category: "member", rank: 3 },
+            { name: "Raketeleon14", type: "vielleicht dabei", category: "member", rank: 4 },
+            { name: "Frymost", type: "Creator", twitch: "frymost0", category: "streamer", rank: 2 },
+            { name: "vextre_live", type: "Creator", twitch: "vextre_live", category: "streamer", rank: 2 },
+            { name: "justlouis2k", type: "Creator", twitch: "justlouis2k", category: "streamer", rank: 2 },
+            { name: "Marlon8663", type: "Creator", twitch: "cookie_spieler", category: "streamer", rank: 2 },
+            { name: "HanniBunny4Real", type: "Creator", twitch: "hannes79012", category: "streamer", rank: 2 },
+            { name: "rayplaylg", mc: "Nayar167", type: "Creator", twitch: "rayplaylg", category: "streamer", rank: 2 },
+            { name: "Rainer8229", type: "Creator", twitch: "rainer82295", category: "streamer", rank: 2 },
+            { name: "PfifferllingerYT", type: "Member", category: "member", rank: 3 },
+            { name: "Plemix", type: "Member", category: "member", rank: 3 },
+            { name: "Nohaldino", type: "Member", category: "member", rank: 3 }
         ];
 
         let currentCategory = 'all';
+        let sortOrder = 'default'; // 'default', 'az', 'za'
         const tableBody = document.getElementById('playerTableBody');
         const searchInput = document.getElementById('searchInput');
         const memberCountDisplay = document.getElementById('memberCount');
@@ -554,38 +630,22 @@ Ziel ist eine lebendige Welt mit eigener Story.
             document.getElementById('countdownTimer').innerText = 
                 `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
-
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Modal Functions
-        function openRulesModal() {
-            document.getElementById('rulesModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function openMapModal() {
-            document.getElementById('mapModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
+        // Modals
+        function openRulesModal() { document.getElementById('rulesModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function openMapModal() { document.getElementById('mapModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
         function openSkinModal(name, mcName) {
             const modal = document.getElementById('skinModal');
-            const fullImg = document.getElementById('fullSkinImg');
-            const modalName = document.getElementById('modalPlayerName');
-            const skinId = mcName || name;
-            modalName.innerText = name;
-            fullImg.src = `https://mc-heads.net/body/${skinId}/400`;
+            document.getElementById('modalPlayerName').innerText = name;
+            document.getElementById('fullSkinImg').src = `https://mc-heads.net/body/${mcName || name}/400`;
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Filtering & Rendering
+        // Filtering & Sorting Logic
         function setCategory(cat) {
             currentCategory = cat;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -595,13 +655,44 @@ Ziel ist eine lebendige Welt mit eigener Story.
             render(searchInput.value);
         }
 
-        function render(filter = '') {
+        function toggleSort() {
+            const label = document.getElementById('sortLabel');
+            const icon = document.querySelector('#sortBtn i');
+            
+            if (sortOrder === 'default') {
+                sortOrder = 'az';
+                label.innerText = 'A-Z';
+                icon.className = 'fas fa-sort-alpha-down';
+            } else if (sortOrder === 'az') {
+                sortOrder = 'za';
+                label.innerText = 'Z-A';
+                icon.className = 'fas fa-sort-alpha-up';
+            } else {
+                sortOrder = 'default';
+                label.innerText = 'Rang';
+                icon.className = 'fas fa-crown';
+            }
+            render(searchInput.value);
+        }
+
+        function render(filterText = '') {
             tableBody.innerHTML = '';
-            const filtered = participants.filter(p => {
-                const matchesSearch = p.name.toLowerCase().includes(filter.toLowerCase());
+            
+            // 1. Filtern
+            let filtered = participants.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(filterText.toLowerCase());
                 const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
                 return matchesSearch && matchesCategory;
             });
+
+            // 2. Sortieren
+            if (sortOrder === 'az') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortOrder === 'za') {
+                filtered.sort((a, b) => b.name.localeCompare(a.name));
+            } else {
+                filtered.sort((a, b) => a.rank - b.rank);
+            }
 
             memberCountDisplay.innerText = participants.length;
 
@@ -614,7 +705,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
                 const lowerType = p.type.toLowerCase();
                 if (lowerType.includes('vielleicht') || lowerType.includes('nicht')) {
                     badgeClass = 'badge-maybe';
-                } else if(p.category === 'streamer' || p.type === 'Projektleiter') {
+                } else if(p.category === 'streamer' || p.rank === 1) {
                     badgeClass = 'badge-red';
                 }
 
@@ -622,7 +713,6 @@ Ziel ist eine lebendige Welt mit eigener Story.
                     <td>
                         <img src="https://mc-heads.net/avatar/${skinIdentifier}/64" 
                              class="skin-head-small" 
-                             alt="Skin" 
                              onclick="openSkinModal('${p.name}', '${p.mc || ''}')"
                              onerror="this.src='https://mc-heads.net/avatar/Steve/64'">
                     </td>
@@ -637,7 +727,7 @@ Ziel ist eine lebendige Welt mit eigener Story.
                     </td>
                     <td style="text-align: right; padding-right: 15px;">
                         ${p.twitch ? `
-                            <a href="https://twitch.tv/${p.twitch}" target="_blank" class="text-[#9146ff] text-lg p-2" title="Twitch">
+                            <a href="https://twitch.tv/${p.twitch}" target="_blank" class="text-[#9146ff] text-xl transition-transform hover:scale-125 inline-block p-2">
                                 <i class="fab fa-twitch"></i>
                             </a>
                         ` : '<span class="text-zinc-800">-</span>'}
